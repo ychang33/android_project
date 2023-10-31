@@ -37,6 +37,7 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+
 @Composable
 fun PokemonCardsTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
