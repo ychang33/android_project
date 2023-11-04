@@ -6,15 +6,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 
 import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -91,7 +99,6 @@ class MainActivity : ComponentActivity() {
                     //MyAppPortrait()
                 }
 
-            }
         }
     }
 
@@ -119,21 +126,30 @@ fun SearchScreen(){
 @Composable
 fun CardList(cards: List<Data>){
 
-    LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally)
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 128.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(10.dp)
+    )
     {
         items(cards) { card ->
-            SubcomposeAsyncImage(
-                model = card.images.small,
-                loading = {
-                    CircularProgressIndicator()
-                },
-                contentDescription = null
-            )
-            Text(text = card.id)
-            Text(text = card.name)
-            card.rarity?.let { Text(text = it) }
-            card.tcgplayer?.let { Text(text = it.updatedAt) }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                SubcomposeAsyncImage(
+                    model = card.images.small,
+                    loading = {
+                        CircularProgressIndicator()
+                    },
+                    modifier = Modifier.clickable(){
+                        },
+                    contentDescription = card.id
+                )
+                Spacer(Modifier.size(8.dp))
+                Text(text="Series: ${card.set.series}")
+            }
+
         }
     }
 }
