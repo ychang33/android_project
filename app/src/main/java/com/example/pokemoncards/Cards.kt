@@ -13,15 +13,6 @@ data class Main(
     val totalCount: Int
 )
 
-//@Serializable
-//data class Data(
-//    val id: String,
-//    val name: String,
-//    val rarity: String,
-//    //val set: HashMap<String, String>,
-//    val tcgplayer: Tcg
-//)
-
 @Serializable
 data class Data(
     val id: String,
@@ -29,11 +20,11 @@ data class Data(
     val supertype: String,
     val set: Set,
     val number: String,
-    val artist: String,
-    val rarity: String,
+    val artist: String? = null,
+    val rarity: String? = null,
     val flavorText: String? = null,
     val images: Images,
-    val tcgplayer: Tcgplayer,
+    val tcgplayer: Tcgplayer? = null,
 )
 
 @Serializable
