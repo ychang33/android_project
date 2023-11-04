@@ -1,43 +1,39 @@
 package com.example.pokemoncards
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.activity.viewModels
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.SubcomposeAsyncImage
-import com.example.pokemoncards.ui.theme.PokemonCardsTheme
+import com.example.pokemoncards.navigation.NavGraph
+import dagger.hilt.android.AndroidEntryPoint
+import com.example.pokemoncards.navigation.Screen.SignInScreen
 
-
+@AndroidEntryPoint
+@ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
-
-
+    private lateinit var navController: NavHostController
+    private val viewModel by viewModels<MainViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PokemonCardsTheme {
+/*            PokemonCardsTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -45,11 +41,39 @@ class MainActivity : ComponentActivity() {
                 ) {
                     //MyApp()
                     MyAppPortrait()
-                }
+                }*/
+                navController = rememberNavController()
+                NavGraph(
+                    navController = navController
+                )
+                AuthState()
+        }
+    }
+
+    @Composable
+    private fun AuthState() {
+        val isUserSignedOut = viewModel.getAuthState().collectAsState().value
+        if (isUserSignedOut) {
+            NavigateToSignInScreen()
+        } else {
+            if (viewModel.isEmailVerified) {
+
+                //NavigateToProfileScreen()
+            } else {
+                //NavigateToVerifyEmailScreen()
+
             }
         }
     }
+
+    @Composable
+    private fun NavigateToSignInScreen() = navController.navigate(SignInScreen.route) {
+        popUpTo(navController.graph.id) {
+            inclusive = true
+        }
+    }
 }
+
 
 @Composable
 fun MyApp(){
@@ -89,3 +113,4 @@ fun CardList(cards: List<Data>){
         }
     }
 }
+
