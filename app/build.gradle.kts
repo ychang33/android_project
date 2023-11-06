@@ -1,11 +1,13 @@
 plugins {
+
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
-    id("kotlin-android")
+    //id("kotlin-android")
     id("kotlin-kapt")
     id("com.google.gms.google-services")
     id("dagger.hilt.android.plugin")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -14,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.pokemoncards"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -23,6 +25,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
     }
 
     buildTypes {
@@ -96,9 +99,12 @@ dependencies {
 
     //Hilt
     //Hilt
-    implementation("com.google.dagger:hilt-android:2.47")
-    kapt("com.google.dagger:hilt-android-compiler:2.47")
+    implementation("com.google.dagger:hilt-android:2.46")
+    kapt("com.google.dagger:hilt-android-compiler:2.46")
     //Hilt Navigation Compose
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0-alpha01")
+
+    implementation("io.github.raamcosta.compose-destinations:core:1.8.42-beta")
+    ksp("io.github.raamcosta.compose-destinations:ksp:1.8.42-beta")
 
 }

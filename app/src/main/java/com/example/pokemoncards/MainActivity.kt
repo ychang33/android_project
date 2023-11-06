@@ -62,7 +62,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
+import com.example.pokemoncards.destinations.CardDetailDestination
+import com.example.pokemoncards.destinations.SearchScreenDestination
 import com.example.pokemoncards.ui.theme.PokemonCardsTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
 
@@ -75,56 +81,68 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-                navController = rememberNavController()
-                NavGraph(
-                    navController = navController
-                )
-                AuthState()
+            DestinationsNavHost(navGraph = NavGraphs.root)
+        }
+//                navController = rememberNavController()
+//                NavGraph(
+//                    navController = navController
+//                )
+//                AuthState()
         }
     }
 
-    @Composable
-    private fun AuthState() {
-        val isUserSignedOut = viewModel.getAuthState().collectAsState().value
-        if (isUserSignedOut) {
-            NavigateToSignInScreen()
-        } else {
-            if (viewModel.isEmailVerified) {
+//    @Composable
+//    private fun AuthState() {
+//        val isUserSignedOut = viewModel.getAuthState().collectAsState().value
+//        if (isUserSignedOut) {
+//            //NavigateToSignInScreen()
+//
+//        } else {
+//            if (viewModel.isEmailVerified) {
+//
+//                //NavigateToProfileScreen()
+//            } else {
+//                //NavigateToVerifyEmailScreen()
+//
+//                //SearchScreen()
+//                }
+//
+//        }
+//    }
 
-                //NavigateToProfileScreen()
-            } else {
-                //NavigateToVerifyEmailScreen()
+//    @Composable
+//    private fun NavigateToSignInScreen() = navController.navigate(SignInScreen.route) {
+//        popUpTo(navController.graph.id) {
+//            inclusive = true
+//        }
+//    }
+//}
 
-                    SearchScreen()
-                    //MyAppPortrait()
-                }
-
-        }
-    }
-
-    @Composable
-    private fun NavigateToSignInScreen() = navController.navigate(SignInScreen.route) {
-        popUpTo(navController.graph.id) {
-            inclusive = true
-        }
-    }
+@RootNavGraph(start = true)
+@Destination
+@Composable
+fun HomeScreen(
+    navigator: DestinationsNavigator
+){
+    navigator.navigate(SearchScreenDestination)
 }
 
-
+@Destination
 @Composable
-fun SearchScreen(){
-
+fun SearchScreen(
+    destinationsNavigator: DestinationsNavigator
+){
     var cards by remember { mutableStateOf<List<Data>>(emptyList()) }
 
     Column {
         SearchBar(onSearch = { newCards -> cards = newCards as List<Data> })
 
-        CardList(cards)
+        CardList(cards, destinationsNavigator)
     }
 }
 
 @Composable
-fun CardList(cards: List<Data>){
+fun CardList(cards: List<Data>, destinationsNavigator: DestinationsNavigator){
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 128.dp),
@@ -142,12 +160,12 @@ fun CardList(cards: List<Data>){
                     loading = {
                         CircularProgressIndicator()
                     },
-                    modifier = Modifier.clickable(){
+                    modifier = Modifier.clickable(){ destinationsNavigator.navigate(CardDetailDestination(1, card))
                         },
                     contentDescription = card.id
                 )
                 Spacer(Modifier.size(8.dp))
-                Text(text="Series: ${card.set.series}")
+                Text(text="Set: ${card.set.name}")
             }
 
         }
