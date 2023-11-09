@@ -30,9 +30,7 @@ import com.example.pokemoncards.core.Constants.VERTICAL_DIVIDER
 fun SignInContent(
     padding: PaddingValues,
     signIn: (email: String, password: String) -> Unit
-/*    ,
-    navigateToForgotPasswordScreen: () -> Unit,
-    navigateToSignUpScreen: () -> Unit*/
+
 ) {
     var email by rememberSaveable(
         stateSaver = TextFieldValue.Saver,
@@ -88,27 +86,5 @@ fun SignInContent(
                 fontSize = 15.sp
             )
         }
-/*        Row {
-            Text(
-                modifier = Modifier.clickable {
-                    navigateToForgotPasswordScreen()
-                },
-                text = "FORGOT_PASSWORD",
-                fontSize = 15.sp
-            )
-            Text(
-                modifier = Modifier.padding(start = 4.dp, end = 4.dp),
-                text = VERTICAL_DIVIDER,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                modifier = Modifier.clickable {
-                    navigateToSignUpScreen()
-                },
-                text = NO_ACCOUNT,
-                fontSize = 15.sp
-            )
-        }*/
     }
 }

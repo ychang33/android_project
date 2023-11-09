@@ -5,6 +5,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.pokemoncards.SearchScreen
 import com.example.pokemoncards.screens.SignInScreen
 import com.example.pokemoncards.navigation.Screen.SignInScreen
 
@@ -15,7 +16,7 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = SignInScreen.route
+        startDestination = "start" //SignInScreen.route
     ) {
         composable(
             route = SignInScreen.route
@@ -28,6 +29,9 @@ fun NavGraph(
                     navController.navigate(SignUpScreen.route)
                 }*/
             )
+        }
+        composable(route = "start"){
+            //SearchScreen()
         }
  /*       composable(
             route = ForgotPasswordScreen.route
@@ -65,5 +69,6 @@ fun NavGraph(
         ) {
             ProfileScreen()
         }*/
+
     }
 }
