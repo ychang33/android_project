@@ -20,10 +20,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pokemoncards.R
 import com.example.pokemoncards.core.Utils.Companion.showMessage
 
-/*import ro.alexmamo.firebasesigninwithemailandpassword.presentation.sign_in.components.SignIn
-import ro.alexmamo.firebasesigninwithemailandpassword.presentation.sign_in.components.SignInContent
-import ro.alexmamo.firebasesigninwithemailandpassword.presentation.sign_in.components.SignInTopBar
-*/
 
 @Composable
 @ExperimentalComposeUiApi

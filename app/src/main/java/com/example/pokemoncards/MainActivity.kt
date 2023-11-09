@@ -8,8 +8,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 
 import androidx.compose.foundation.layout.Column
@@ -21,29 +19,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,11 +42,8 @@ import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.SubcomposeAsyncImage
-import com.example.pokemoncards.navigation.NavGraph
 import dagger.hilt.android.AndroidEntryPoint
-import com.example.pokemoncards.navigation.Screen.SignInScreen
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -68,17 +54,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.SubcomposeAsyncImage
-import com.example.pokemoncards.core.Utils
 import com.example.pokemoncards.destinations.CardDetailDestination
 import com.example.pokemoncards.destinations.LoginScreenDestination
 import com.example.pokemoncards.destinations.SearchScreenDestination
-import com.example.pokemoncards.screens.SignIn
-import com.example.pokemoncards.screens.SignInContent
-import com.example.pokemoncards.screens.SignInViewModel
-import com.example.pokemoncards.ui.theme.PokemonCardsTheme
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.ramcosta.composedestinations.DestinationsNavHost
@@ -86,7 +64,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 
 @AndroidEntryPoint
@@ -98,43 +75,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            DestinationsNavHost(navGraph = NavGraphs.root)
-        }
-//                navController = rememberNavController()
-//                NavGraph(
-//                    navController = navController
-//                )
-//                AuthState()
+            setContent {
+                DestinationsNavHost(navGraph = NavGraphs.root)
+            }
         }
     }
 
-//    @Composable
-//    private fun AuthState() {
-//        val isUserSignedOut = viewModel.getAuthState().collectAsState().value
-//        if (isUserSignedOut) {
-//            //NavigateToSignInScreen()
-//
-//        } else {
-//            if (viewModel.isEmailVerified) {
-//
-//                //NavigateToProfileScreen()
-//            } else {
-//                //NavigateToVerifyEmailScreen()
-//
-//                //SearchScreen()
-//                }
-//
-//        }
-//    }
-
-//    @Composable
-//    private fun NavigateToSignInScreen() = navController.navigate(SignInScreen.route) {
-//        popUpTo(navController.graph.id) {
-//            inclusive = true
-//        }
-//    }
-//}
 
 @RootNavGraph(start = true)
 @Destination
