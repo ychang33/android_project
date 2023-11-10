@@ -1,11 +1,15 @@
 package com.example.pokemoncards
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import coil.compose.AsyncImage
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -18,8 +22,10 @@ fun CardDetail(
     destinationsNavigator: DestinationsNavigator
 ){
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally ){
-        AsyncImage(model = card.images.small, contentDescription = card.name)
+    Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center){
+        AsyncImage(model = card.images.large, contentDescription = card.name)
 
         Box() {
             Column {

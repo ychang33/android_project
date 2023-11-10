@@ -125,8 +125,9 @@ fun CardList(cards: List<Data>, destinationsNavigator: DestinationsNavigator){
                     loading = {
                         CircularProgressIndicator()
                     },
-                    modifier = Modifier.clickable(){ destinationsNavigator.navigate(CardDetailDestination(1, card))
-                        },
+                    modifier = Modifier.clickable(){
+                        destinationsNavigator.navigate(CardDetailDestination(1, card))
+                                                   },
                     contentDescription = card.id
                 )
                 Spacer(Modifier.size(8.dp))
