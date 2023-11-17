@@ -1,5 +1,6 @@
 package com.example.pokemoncards
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -104,15 +106,14 @@ fun CardDetail(
 @Composable
 fun FavoriteIcon(card: Data, modifier: Modifier = Modifier) {
     var isFavorite by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     // Retrieve and check card marked as favorite card
     val db = Firebase.firestore
     db.collection("favorites").document(card.id).get()
         .addOnSuccessListener{document->
             if (document != null){
-                val cardData = document.toObject(Data::class.java)
-                if (cardData != null) {
-                    isFavorite = (cardData.id == card.id)
-                }
+                var cardid = document.data?.get("id")
+                isFavorite = (cardid == card.id)
             }
         }
 
@@ -132,10 +133,23 @@ fun FavoriteIcon(card: Data, modifier: Modifier = Modifier) {
 
                     // Remove the record from database
                     if (isFavorite) {
-                        db.collection("favorites").document("id").set(card)
+
+                        db.collection("favorites").document(card.id).delete()
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Remove success", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener{
+                                    exception -> Toast.makeText(context, "Remove failure", Toast.LENGTH_SHORT).show()
+                            }
                     }else{
                         // Add a record to database
-                        db.collection("favorites").document(card.id).delete()
+                        db.collection("favorites").document(card.id).set(card)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Insert success", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener{
+                                    exception -> Toast.makeText(context, "Insert failure", Toast.LENGTH_SHORT).show()
+                            }
                     }
                     isFavorite = !isFavorite
                 }
