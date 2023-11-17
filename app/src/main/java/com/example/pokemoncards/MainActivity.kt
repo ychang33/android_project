@@ -12,6 +12,7 @@ import androidx.compose.material3.CircularProgressIndicator
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -120,16 +121,24 @@ fun CardList(cards: List<Data>, destinationsNavigator: DestinationsNavigator){
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                SubcomposeAsyncImage(
-                    model = card.images.small,
-                    loading = {
-                        CircularProgressIndicator()
-                    },
-                    modifier = Modifier.clickable(){
-                        destinationsNavigator.navigate(CardDetailDestination(1, card))
-                                                   },
-                    contentDescription = card.id
-                )
+                Row() {
+                    SubcomposeAsyncImage(
+                        model = card.images.small,
+                        loading = {
+                            CircularProgressIndicator()
+                        },
+                        modifier = Modifier
+                            .weight(0.8f)
+                            .clickable() {
+                            destinationsNavigator.navigate(CardDetailDestination(1, card))
+                        },
+                        contentDescription = card.id
+                    )
+                    FavoriteIcon(card,
+                        modifier = Modifier
+                            .weight(0.2f)
+                    )
+                }
                 Spacer(Modifier.size(8.dp))
                 Text(text="Set: ${card.set.name}")
             }

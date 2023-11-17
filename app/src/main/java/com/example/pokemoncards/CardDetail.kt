@@ -21,9 +21,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -54,11 +57,11 @@ fun CardDetail(
             )
             //.fillMaxSize()
             // FavoriteIcon in the top-right corner
-            FavoriteIcon(
+/*            FavoriteIcon(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(16.dp)
-            )
+            )*/
         }
 
         // Rest of your content
@@ -76,6 +79,7 @@ fun CardDetail(
                     Text(text = "Name: ${card.name}")
                     card.rarity?.let { Text(text = "Rarity: $it") }
                 }
+                FavoriteIcon(card)
 
             }
 
@@ -98,13 +102,24 @@ fun CardDetail(
 
 
 @Composable
-fun FavoriteIcon(modifier: Modifier = Modifier) {
+fun FavoriteIcon(card: Data, modifier: Modifier = Modifier) {
     var isFavorite by remember { mutableStateOf(false) }
+    // Retrieve and check card marked as favorite card
+    val db = Firebase.firestore
+    db.collection("favorites").document(card.id).get()
+        .addOnSuccessListener{document->
+            if (document != null){
+                val cardData = document.toObject(Data::class.java)
+                if (cardData != null) {
+                    isFavorite = (cardData.id == card.id)
+                }
+            }
+        }
 
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
         Row(
             modifier = Modifier
@@ -114,14 +129,22 @@ fun FavoriteIcon(modifier: Modifier = Modifier) {
         ) {
             IconButton(
                 onClick = {
+
+                    // Remove the record from database
+                    if (isFavorite) {
+                        db.collection("favorites").document("id").set(card)
+                    }else{
+                        // Add a record to database
+                        db.collection("favorites").document(card.id).delete()
+                    }
                     isFavorite = !isFavorite
                 }
             ) {
                 Icon(
                     painter = if (isFavorite) {
-                        painterResource(id = R.drawable.baseline_favorite_border_24)
-                    } else {
                         painterResource(id = R.drawable.baseline_favorite_24)
+                    } else {
+                        painterResource(id = R.drawable.baseline_favorite_border_24)
                     },
                     contentDescription = "Favorite Icon"
                 )
