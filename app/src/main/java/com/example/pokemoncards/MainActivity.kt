@@ -99,13 +99,31 @@ fun SearchScreen(
     destinationsNavigator: DestinationsNavigator
 ){
     var cards by remember { mutableStateOf<List<Data>>(emptyList()) }
+    //var cards by remember { mutableStateOf<List<Data>?>(null) }
 
     Column {
         SearchBar(onSearch = { newCards -> cards = newCards as List<Data> })
 
-        CardList(cards, destinationsNavigator)
+        // should check login status
+        if (cards.isNullOrEmpty()) {
+            val db = Firebase.firestore
+            db.collection("favorites").get()
+                .addOnSuccessListener { documents ->
+                    val favoriteList = mutableListOf<Data>()
+                    for (document in documents) {
+                        val favoriteCard = document.toObject(Data::class.java)
+                        favoriteList.add(favoriteCard)
+                    }
+                    cards = favoriteList
+                }
+        }
+        cards?.let { CardList(it, destinationsNavigator) }
+        //CardList(cards, destinationsNavigator)
+
     }
 }
+
+
 
 @Composable
 fun CardList(cards: List<Data>, destinationsNavigator: DestinationsNavigator){
@@ -260,16 +278,13 @@ fun LoginSection(
                 userRef.get()
                     .addOnSuccessListener { document ->
                         if (document != null) {
-                            val userEmail = document.data?.get("email")
                             val userPassword = document.data?.get("password")
-                            //Toast.makeText(context, "data: ${document.data?.get("password")}", Toast.LENGTH_SHORT).show()
-                            if (userPassword == password) {
+                            val isLoginSuccess = (userPassword == password)
+                            if (isLoginSuccess) {
                                 Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show()
-//                                destinationsNavigator.navigate(SearchScreenDestination(1, card)
                                 destinationsNavigator.navigate(SearchScreenDestination)
                             }else
                             {
-                                //Toast.makeText(context, "Login fail: ${document.data}", Toast.LENGTH_SHORT).show()
                                 Toast.makeText(context, "Login fail", Toast.LENGTH_SHORT).show()
                             }
                         } else {

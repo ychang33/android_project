@@ -57,13 +57,6 @@ fun CardDetail(
                     .fillMaxWidth()
                     .clip(MaterialTheme.shapes.medium)
             )
-            //.fillMaxSize()
-            // FavoriteIcon in the top-right corner
-/*            FavoriteIcon(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(16.dp)
-            )*/
         }
 
         // Rest of your content
