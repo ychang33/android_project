@@ -105,7 +105,7 @@ fun SearchScreen(
         SearchBar(onSearch = { newCards -> cards = newCards as List<Data> })
 
         // should check login status
-        if (cards.isNullOrEmpty()) {
+        if (cards.isNullOrEmpty() and PokemonCardsApp.isLoginSuccessful) {
             val db = Firebase.firestore
             db.collection("favorites").get()
                 .addOnSuccessListener { documents ->
@@ -213,7 +213,7 @@ fun SearchBar(
 @Composable
 fun LoginScreen(destinationsNavigator: DestinationsNavigator) {
     val context = LocalContext.current
-    var isLoginSuccessful by remember { mutableStateOf(false)}
+    //var isLoginSuccessful by remember { mutableStateOf(false)}
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -222,12 +222,12 @@ fun LoginScreen(destinationsNavigator: DestinationsNavigator) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(16.dp))
-        if (isLoginSuccessful){
+        if (PokemonCardsApp.isLoginSuccessful){
             // display UI is login success
         }else{
             LoginSection(Modifier.padding(horizontal = 16.dp), destinationsNavigator) { isSuccess ->
                 if (isSuccess){
-                    isLoginSuccessful = true
+                    PokemonCardsApp.isLoginSuccessful = true
                 }else
                 {
                     Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
@@ -279,8 +279,8 @@ fun LoginSection(
                     .addOnSuccessListener { document ->
                         if (document != null) {
                             val userPassword = document.data?.get("password")
-                            val isLoginSuccess = (userPassword == password)
-                            if (isLoginSuccess) {
+                            PokemonCardsApp.isLoginSuccessful = (userPassword == password)
+                            if (PokemonCardsApp.isLoginSuccessful) {
                                 Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show()
                                 destinationsNavigator.navigate(SearchScreenDestination)
                             }else
