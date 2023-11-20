@@ -9,5 +9,6 @@ class PokemonCardsApp : Application(){
 
     companion object {
         var isLoginSuccessful: Boolean = false
+        lateinit var currentUserId: String
     }
 }

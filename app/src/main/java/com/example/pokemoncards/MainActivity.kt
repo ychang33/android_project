@@ -111,8 +111,12 @@ fun SearchScreen(
                 .addOnSuccessListener { documents ->
                     val favoriteList = mutableListOf<Data>()
                     for (document in documents) {
-                        val favoriteCard = document.toObject(Data::class.java)
-                        favoriteList.add(favoriteCard)
+                        if (document.id.substring(
+                                document.id.length - PokemonCardsApp.currentUserId.length) ==
+                                        PokemonCardsApp.currentUserId) {
+                            val favoriteCard = document.toObject(Data::class.java)
+                            favoriteList.add(favoriteCard)
+                        }
                     }
                     cards = favoriteList
                 }
@@ -213,7 +217,7 @@ fun SearchBar(
 @Composable
 fun LoginScreen(destinationsNavigator: DestinationsNavigator) {
     val context = LocalContext.current
-    //var isLoginSuccessful by remember { mutableStateOf(false)}
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -281,6 +285,7 @@ fun LoginSection(
                             val userPassword = document.data?.get("password")
                             PokemonCardsApp.isLoginSuccessful = (userPassword == password)
                             if (PokemonCardsApp.isLoginSuccessful) {
+                                PokemonCardsApp.currentUserId = userid
                                 Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show()
                                 destinationsNavigator.navigate(SearchScreenDestination)
                             }else

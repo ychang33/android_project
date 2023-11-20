@@ -102,7 +102,7 @@ fun FavoriteIcon(card: Data, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     // Retrieve and check card marked as favorite card
     val db = Firebase.firestore
-    db.collection("favorites").document(card.id).get()
+    db.collection("favorites").document(card.id + PokemonCardsApp.currentUserId).get()
         .addOnSuccessListener{document->
             if (document != null){
                 var cardid = document.data?.get("id")
@@ -127,7 +127,7 @@ fun FavoriteIcon(card: Data, modifier: Modifier = Modifier) {
                     // Remove the record from database
                     if (isFavorite) {
 
-                        db.collection("favorites").document(card.id).delete()
+                        db.collection("favorites").document(card.id + PokemonCardsApp.currentUserId).delete()
                             .addOnSuccessListener {
                                 Toast.makeText(context, "Remove success", Toast.LENGTH_SHORT).show()
                             }
@@ -136,7 +136,7 @@ fun FavoriteIcon(card: Data, modifier: Modifier = Modifier) {
                             }
                     }else{
                         // Add a record to database
-                        db.collection("favorites").document(card.id).set(card)
+                        db.collection("favorites").document(card.id + PokemonCardsApp.currentUserId).set(card)
                             .addOnSuccessListener {
                                 Toast.makeText(context, "Insert success", Toast.LENGTH_SHORT).show()
                             }
