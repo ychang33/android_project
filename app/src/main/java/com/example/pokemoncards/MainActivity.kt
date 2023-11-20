@@ -29,6 +29,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
@@ -106,7 +107,7 @@ fun SearchScreen(
         topBar = {SearchBar()},
         floatingActionButton = { FloatingActionButton(onClick = { viewModel.Favourites() })
         {
-            Icon(Icons.Default.Add, contentDescription = "Add")}
+            Icon(Icons.Filled.Favorite, contentDescription = "Favorites")}
         }
     ){ innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)){
