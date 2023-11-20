@@ -1,5 +1,6 @@
 package com.example.pokemoncards
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -26,10 +27,13 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -55,6 +59,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokemoncards.destinations.CardDetailDestination
 import com.example.pokemoncards.destinations.LoginScreenDestination
 import com.example.pokemoncards.destinations.SearchScreenDestination
@@ -89,48 +94,64 @@ class MainActivity : ComponentActivity() {
 fun HomeScreen(
     navigator: DestinationsNavigator
 ){
-    //navigator.navigate(SearchScreenDestination)
     navigator.navigate(LoginScreenDestination)
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Destination
 @Composable
 fun SearchScreen(
     destinationsNavigator: DestinationsNavigator
 ){
-    var cards by remember { mutableStateOf<List<Data>>(emptyList()) }
+    //var cards by remember { mutableStateOf<List<Data>>(emptyList()) }
     //var cards by remember { mutableStateOf<List<Data>?>(null) }
+    val viewModel = viewModel{ PokemonViewModel() }
 
-    Column {
-        SearchBar(onSearch = { newCards -> cards = newCards as List<Data> })
+    Scaffold (
+        topBar = {SearchBar()},
+        content = {CardList( destinationsNavigator = destinationsNavigator)},
+        floatingActionButton = { FloatingActionButton(onClick = { viewModel.Favourites() })
+        {Icon(Icons.Default.Add, contentDescription = "Add")
+            
+        }}
+    )
+
+        //SearchBar(onSearch = { newCards -> viewModel.cards = newCards as List<Data> })
 
         // should check login status
-        if (cards.isNullOrEmpty() and PokemonCardsApp.isLoginSuccessful) {
-            val db = Firebase.firestore
-            db.collection("favorites").get()
-                .addOnSuccessListener { documents ->
-                    val favoriteList = mutableListOf<Data>()
-                    for (document in documents) {
-                        if (document.id.substring(
-                                document.id.length - PokemonCardsApp.currentUserId.length) ==
-                                        PokemonCardsApp.currentUserId) {
-                            val favoriteCard = document.toObject(Data::class.java)
-                            favoriteList.add(favoriteCard)
-                        }
-                    }
-                    cards = favoriteList
-                }
-        }
-        cards?.let { CardList(it, destinationsNavigator) }
+
+        //cards?.let { CardList(it, destinationsNavigator) }
         //CardList(cards, destinationsNavigator)
-
-    }
 }
-
-
+//@Composable
+//fun Favourites(){
+//
+//    val viewModel = viewModel{ PokemonViewModel() }
+//
+//    if (PokemonCardsApp.isLoginSuccessful) {
+//        val db = Firebase.firestore
+//        db.collection("favorites").get()
+//            .addOnSuccessListener { documents ->
+//                val favoriteList = mutableListOf<Data>()
+//                for (document in documents) {
+//                    if (document.id.substring(
+//                            document.id.length - PokemonCardsApp.currentUserId.length) ==
+//                        PokemonCardsApp.currentUserId) {
+//                        val favoriteCard = document.toObject(Data::class.java)
+//                        favoriteList.add(favoriteCard)
+//                    }
+//                }
+//                viewModel.cards = favoriteList
+//            }
+//    }
+//}
 
 @Composable
-fun CardList(cards: List<Data>, destinationsNavigator: DestinationsNavigator){
+fun CardList(//cards: List<Data>,
+             destinationsNavigator: DestinationsNavigator){
+
+    val viewModel = viewModel{ PokemonViewModel() }
+   // val cards2 by remember { mutableStateOf(cards) }
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 128.dp),
@@ -139,7 +160,7 @@ fun CardList(cards: List<Data>, destinationsNavigator: DestinationsNavigator){
         contentPadding = PaddingValues(10.dp)
     )
     {
-        items(cards) { card ->
+        items(viewModel.cards) { card ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -152,8 +173,8 @@ fun CardList(cards: List<Data>, destinationsNavigator: DestinationsNavigator){
                         modifier = Modifier
                             .weight(0.8f)
                             .clickable() {
-                            destinationsNavigator.navigate(CardDetailDestination(1, card))
-                        },
+                                destinationsNavigator.navigate(CardDetailDestination(1, card))
+                            },
                         contentDescription = card.id
                     )
                     FavoriteIcon(card,
@@ -162,7 +183,7 @@ fun CardList(cards: List<Data>, destinationsNavigator: DestinationsNavigator){
                     )
                 }
                 Spacer(Modifier.size(8.dp))
-                Text(text="Set: ${card.set.name}")
+                Text(text="${card.set.name}")
             }
 
         }
@@ -171,10 +192,12 @@ fun CardList(cards: List<Data>, destinationsNavigator: DestinationsNavigator){
 
 @Composable
 fun SearchBar(
-    onSearch: (Any?) -> Unit,
+    //onSearch: (Any?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
+
+    val viewModel = viewModel{ PokemonViewModel() }
 
     var query by remember { mutableStateOf("") }
 
@@ -202,7 +225,8 @@ fun SearchBar(
                 val result = PokemonApi.getCard(query)
 
                 if (result != null) {
-                    onSearch(result.data)
+                    //onSearch(result.data)
+                    viewModel.cards = result.data
                 }
             }
             focusManager.clearFocus()
