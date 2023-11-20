@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "891233530487",
+    "project_id": "pokemon-cards-81cbf",
+    "storage_bucket": "pokemon-cards-81cbf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891233530487:android:453a1829bbebc735570c72",
+        "android_client_info": {
+          "package_name": "com.example.pokemoncards"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi5Tbu9utiE3wJQR8GXKKx5oFDj5D0QDk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
