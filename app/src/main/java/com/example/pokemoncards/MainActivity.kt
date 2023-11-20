@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CircularProgressIndicator
 
 import androidx.compose.foundation.layout.Column
@@ -75,10 +76,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 @ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
-    private lateinit var navController: NavHostController
-    private val viewModel by viewModels<MainViewModel>()
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
             setContent {
@@ -103,55 +100,24 @@ fun HomeScreen(
 fun SearchScreen(
     destinationsNavigator: DestinationsNavigator
 ){
-    //var cards by remember { mutableStateOf<List<Data>>(emptyList()) }
-    //var cards by remember { mutableStateOf<List<Data>?>(null) }
     val viewModel = viewModel{ PokemonViewModel() }
 
     Scaffold (
         topBar = {SearchBar()},
-        content = {CardList( destinationsNavigator = destinationsNavigator)},
         floatingActionButton = { FloatingActionButton(onClick = { viewModel.Favourites() })
-        {Icon(Icons.Default.Add, contentDescription = "Add")
-            
-        }}
-    )
-
-        //SearchBar(onSearch = { newCards -> viewModel.cards = newCards as List<Data> })
-
-        // should check login status
-
-        //cards?.let { CardList(it, destinationsNavigator) }
-        //CardList(cards, destinationsNavigator)
+        {
+            Icon(Icons.Default.Add, contentDescription = "Add")}
+        }
+    ){ innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)){
+            CardList( destinationsNavigator = destinationsNavigator)}
+     }
 }
-//@Composable
-//fun Favourites(){
-//
-//    val viewModel = viewModel{ PokemonViewModel() }
-//
-//    if (PokemonCardsApp.isLoginSuccessful) {
-//        val db = Firebase.firestore
-//        db.collection("favorites").get()
-//            .addOnSuccessListener { documents ->
-//                val favoriteList = mutableListOf<Data>()
-//                for (document in documents) {
-//                    if (document.id.substring(
-//                            document.id.length - PokemonCardsApp.currentUserId.length) ==
-//                        PokemonCardsApp.currentUserId) {
-//                        val favoriteCard = document.toObject(Data::class.java)
-//                        favoriteList.add(favoriteCard)
-//                    }
-//                }
-//                viewModel.cards = favoriteList
-//            }
-//    }
-//}
 
 @Composable
-fun CardList(//cards: List<Data>,
-             destinationsNavigator: DestinationsNavigator){
+fun CardList(destinationsNavigator: DestinationsNavigator){
 
     val viewModel = viewModel{ PokemonViewModel() }
-   // val cards2 by remember { mutableStateOf(cards) }
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 128.dp),
@@ -185,14 +151,12 @@ fun CardList(//cards: List<Data>,
                 Spacer(Modifier.size(8.dp))
                 Text(text="${card.set.name}")
             }
-
         }
     }
 }
 
 @Composable
 fun SearchBar(
-    //onSearch: (Any?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -223,9 +187,7 @@ fun SearchBar(
         keyboardActions = KeyboardActions (onSearch = {
             corountine.launch{
                 val result = PokemonApi.getCard(query)
-
                 if (result != null) {
-                    //onSearch(result.data)
                     viewModel.cards = result.data
                 }
             }
@@ -260,11 +222,8 @@ fun LoginScreen(destinationsNavigator: DestinationsNavigator) {
                 {
                     Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
                 }
-
             }
         }
-
-
     }
 }
 
