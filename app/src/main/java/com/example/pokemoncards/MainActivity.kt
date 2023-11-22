@@ -130,12 +130,12 @@ fun CardList(destinationsNavigator: DestinationsNavigator){
             }
         }
     else {
-        if (viewModel.cards == null) {
+        if (viewModel.cards?.isEmpty() == true) {
             Box(modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
                 contentAlignment = Alignment.Center) {
-                Text(text = "No Results Found",
+                Text(text = "No Results",
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
                     color = Color.Black)
@@ -186,11 +186,8 @@ fun SearchBar(
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
-
     val viewModel = viewModel{ PokemonViewModel() }
-
     var query by remember { mutableStateOf("") }
-
     val coroutine = rememberCoroutineScope()
 
     TextField(
@@ -217,7 +214,7 @@ fun SearchBar(
                 if (result != null)
                     viewModel.cards = result.data
                 else
-                    viewModel.cards = null
+                    viewModel.cards = emptyList()
                 viewModel.loading = false
             }
             focusManager.clearFocus()
