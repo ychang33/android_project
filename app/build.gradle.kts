@@ -84,6 +84,7 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("com.google.firebase:firebase-firestore:24.9.1")
+    implementation("androidx.media3:media3-session:1.1.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -108,4 +109,5 @@ dependencies {
     implementation("io.github.raamcosta.compose-destinations:core:1.8.42-beta")
     ksp("io.github.raamcosta.compose-destinations:ksp:1.8.42-beta")
 
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 }

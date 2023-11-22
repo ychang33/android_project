@@ -1,5 +1,6 @@
 package com.example.pokemoncards
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -8,10 +9,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CircularProgressIndicator
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,10 +28,14 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -54,6 +61,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokemoncards.destinations.CardDetailDestination
 import com.example.pokemoncards.destinations.LoginScreenDestination
 import com.example.pokemoncards.destinations.SearchScreenDestination
@@ -69,10 +77,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 @ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
-    private lateinit var navController: NavHostController
-    private val viewModel by viewModels<MainViewModel>()
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
             setContent {
@@ -88,26 +92,33 @@ class MainActivity : ComponentActivity() {
 fun HomeScreen(
     navigator: DestinationsNavigator
 ){
-    //navigator.navigate(SearchScreenDestination)
     navigator.navigate(LoginScreenDestination)
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Destination
 @Composable
 fun SearchScreen(
     destinationsNavigator: DestinationsNavigator
 ){
-    var cards by remember { mutableStateOf<List<Data>>(emptyList()) }
+    val viewModel = viewModel{ PokemonViewModel() }
 
-    Column {
-        SearchBar(onSearch = { newCards -> cards = newCards as List<Data> })
-
-        CardList(cards, destinationsNavigator)
-    }
+    Scaffold (
+        topBar = {SearchBar()},
+        floatingActionButton = { FloatingActionButton(onClick = { viewModel.Favourites() })
+        {
+            Icon(Icons.Filled.Favorite, contentDescription = "Favorites")}
+        }
+    ){ innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)){
+            CardList( destinationsNavigator = destinationsNavigator)}
+     }
 }
 
 @Composable
-fun CardList(cards: List<Data>, destinationsNavigator: DestinationsNavigator){
+fun CardList(destinationsNavigator: DestinationsNavigator){
+
+    val viewModel = viewModel{ PokemonViewModel() }
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 128.dp),
@@ -116,34 +127,42 @@ fun CardList(cards: List<Data>, destinationsNavigator: DestinationsNavigator){
         contentPadding = PaddingValues(10.dp)
     )
     {
-        items(cards) { card ->
+        items(viewModel.cards) { card ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                SubcomposeAsyncImage(
-                    model = card.images.small,
-                    loading = {
-                        CircularProgressIndicator()
-                    },
-                    modifier = Modifier.clickable(){
-                        destinationsNavigator.navigate(CardDetailDestination(1, card))
-                                                   },
-                    contentDescription = card.id
-                )
+                Row() {
+                    SubcomposeAsyncImage(
+                        model = card.images.small,
+                        loading = {
+                            CircularProgressIndicator()
+                        },
+                        modifier = Modifier
+                            .weight(0.8f)
+                            .clickable() {
+                                destinationsNavigator.navigate(CardDetailDestination(1, card))
+                            },
+                        contentDescription = card.id
+                    )
+                    FavoriteIcon(card,
+                        modifier = Modifier
+                            .weight(0.2f)
+                    )
+                }
                 Spacer(Modifier.size(8.dp))
-                Text(text="Set: ${card.set.name}")
+                Text(text="${card.set.name}")
             }
-
         }
     }
 }
 
 @Composable
 fun SearchBar(
-    onSearch: (Any?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
+
+    val viewModel = viewModel{ PokemonViewModel() }
 
     var query by remember { mutableStateOf("") }
 
@@ -169,9 +188,8 @@ fun SearchBar(
         keyboardActions = KeyboardActions (onSearch = {
             corountine.launch{
                 val result = PokemonApi.getCard(query)
-
                 if (result != null) {
-                    onSearch(result.data)
+                    viewModel.cards = result.data
                 }
             }
             focusManager.clearFocus()
@@ -186,7 +204,7 @@ fun SearchBar(
 @Composable
 fun LoginScreen(destinationsNavigator: DestinationsNavigator) {
     val context = LocalContext.current
-    var isLoginSuccessful by remember { mutableStateOf(false)}
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -195,21 +213,18 @@ fun LoginScreen(destinationsNavigator: DestinationsNavigator) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(16.dp))
-        if (isLoginSuccessful){
+        if (PokemonCardsApp.isLoginSuccessful){
             // display UI is login success
         }else{
             LoginSection(Modifier.padding(horizontal = 16.dp), destinationsNavigator) { isSuccess ->
                 if (isSuccess){
-                    isLoginSuccessful = true
+                    PokemonCardsApp.isLoginSuccessful = true
                 }else
                 {
                     Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
                 }
-
             }
         }
-
-
     }
 }
 
@@ -251,16 +266,14 @@ fun LoginSection(
                 userRef.get()
                     .addOnSuccessListener { document ->
                         if (document != null) {
-                            val userEmail = document.data?.get("email")
                             val userPassword = document.data?.get("password")
-                            //Toast.makeText(context, "data: ${document.data?.get("password")}", Toast.LENGTH_SHORT).show()
-                            if (userPassword == password) {
+                            PokemonCardsApp.isLoginSuccessful = (userPassword == password)
+                            if (PokemonCardsApp.isLoginSuccessful) {
+                                PokemonCardsApp.currentUserId = userid
                                 Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show()
-//                                destinationsNavigator.navigate(SearchScreenDestination(1, card)
                                 destinationsNavigator.navigate(SearchScreenDestination)
                             }else
                             {
-                                //Toast.makeText(context, "Login fail: ${document.data}", Toast.LENGTH_SHORT).show()
                                 Toast.makeText(context, "Login fail", Toast.LENGTH_SHORT).show()
                             }
                         } else {

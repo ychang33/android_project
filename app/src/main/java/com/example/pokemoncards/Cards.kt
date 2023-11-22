@@ -18,38 +18,50 @@ data class Data(
     val id: String,
     val name: String,
     val supertype: String,
-    val set: Set,
+    val set: Set = Set(),
     val number: String,
     val artist: String? = null,
     val rarity: String? = null,
     val flavorText: String? = null,
-    val images: Images,
+    val images: Images= Images(),
     val tcgplayer: Tcgplayer? = null,
-)
+){
+    // Secondary constructor with no parameters
+    constructor() : this("", "", "", Set(), "", null, null, null, Images(), null)
+}
+
 
 @Serializable
 data class Set(
-    val id: String,
-    val name: String,
-    val series: String,
-    val printedTotal: Int,
-    val total: Int,
-    val releaseDate: String,
-    val updatedAt: String,
-)
+    val id: String = "",
+    val name: String = "",
+    val series: String = "",
+    val printedTotal: Int = 0,
+    val total: Int = 0 ,
+    val releaseDate: String = "",
+    val updatedAt: String = "",
+){
+    constructor(): this("", "", "", 0, 0, "", "")
+}
 
 @Serializable
 data class Images(
-    val small: String,
-    val large: String
+    val small: String = "",
+    val large: String = ""
 )
+{
+    constructor(): this("", "")
+}
 
 @Serializable
 data class Tcgplayer(
     val url: String,
     val updatedAt: String,
     val prices: Prices? = null
-)
+){
+    // No-argument constructor
+    constructor() : this("", "", null)
+}
 
 @Serializable
 data class Prices(

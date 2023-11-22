@@ -43,6 +43,19 @@ class PokemonApi {
             }
         }
 
+        suspend fun getCardById(id: String): Main? {
+
+            val response: HttpResponse =
+                client.get("https://api.pokemontcg.io/v2/cards?q=id:$id") {
+                    url{
+                    }
+                }
+            return if (response.status.value in 200..299) {
+                response.body()
+            } else{
+                null
+            }
+        }
     }
 
 }
