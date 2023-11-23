@@ -70,7 +70,17 @@ data class Prices(
     val reverseHolofoil: PriceDetail? = null,
     @SerialName("1stEditionHolofoil") val firstHolofoil: PriceDetail? = null,
     @SerialName("1stEditionNormal") val firstNormal: PriceDetail? = null,
-)
+){
+    fun toMap(): Map<String, PriceDetail?> {
+        return mapOf(
+            "normal" to normal,
+            "holofoil" to holofoil,
+            "reverse holofoil" to holofoil,
+            "1st ed holofoil" to firstHolofoil,
+            "1st ed Normal" to firstNormal
+        )
+    }
+}
 
 @Serializable
 data class PriceDetail(
@@ -79,4 +89,14 @@ data class PriceDetail(
     val high: Float? = null,
     val market: Float? = null,
     val directLow: Float? = null
-)
+){
+    fun toMap(): Map<String, Float?> {
+        return mapOf(
+            "low" to low,
+            "mid" to mid,
+            "high" to high,
+            "market" to market,
+            "direct low" to directLow
+        )
+    }
+}
