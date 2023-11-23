@@ -1,11 +1,12 @@
 package com.example.pokemoncards
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 
+import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -46,23 +48,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.navigation.NavHostController
 import coil.compose.SubcomposeAsyncImage
 import dagger.hilt.android.AndroidEntryPoint
 
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImagePainter
 import com.example.pokemoncards.destinations.CardDetailDestination
 import com.example.pokemoncards.destinations.LoginScreenDestination
 import com.example.pokemoncards.destinations.SearchScreenDestination
@@ -96,7 +95,7 @@ fun HomeScreen(
     navigator.navigate(LoginScreenDestination)
 }
 
-//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Destination
 @Composable
 fun SearchScreen(
@@ -121,64 +120,39 @@ fun CardList(destinationsNavigator: DestinationsNavigator){
 
     val viewModel = viewModel{ PokemonViewModel() }
 
-    if (viewModel.loading)
-        {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-                contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        }
-    else {
-        if (viewModel.cards?.isEmpty() == true) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-                contentAlignment = Alignment.Center) {
-                Text(text = "No Results",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    color = Color.Black)
-            }
-        }
-        else{
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 128.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(10.dp)
-        )
-        {
-            items(viewModel.cards!!) { card ->
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Row() {
-                        SubcomposeAsyncImage(
-                            model = card.images.small,
-                            loading = {
-                                CircularProgressIndicator()
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 128.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(10.dp)
+    )
+    {
+        items(viewModel.cards) { card ->
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Row() {
+                    SubcomposeAsyncImage(
+                        model = card.images.small,
+                        loading = {
+                            CircularProgressIndicator()
+                        },
+                        modifier = Modifier
+                            .weight(0.8f)
+                            .clickable() {
+                                destinationsNavigator.navigate(CardDetailDestination(1, card))
                             },
-                            modifier = Modifier
-                                .weight(0.8f)
-                                .clickable() {
-                                    destinationsNavigator.navigate(CardDetailDestination(1, card))
-                                },
-                            contentDescription = card.id
-                        )
-                        FavoriteIcon(
-                            card,
-                            modifier = Modifier
-                                .weight(0.2f)
-                        )
-                    }
-                    Spacer(Modifier.size(8.dp))
-                    Text(text = "${card.set.name}")
+                        contentDescription = card.id
+                    )
+                    FavoriteIcon(card,
+                        modifier = Modifier
+                            .weight(0.2f)
+                    )
                 }
+                Spacer(Modifier.size(8.dp))
+                Text(text="${card.set.name}")
             }
         }
-    }
     }
 }
 
@@ -187,9 +161,12 @@ fun SearchBar(
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
+
     val viewModel = viewModel{ PokemonViewModel() }
+
     var query by remember { mutableStateOf("") }
-    val coroutine = rememberCoroutineScope()
+
+    val corountine = rememberCoroutineScope()
 
     TextField(
         value = query,
@@ -209,14 +186,11 @@ fun SearchBar(
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions (onSearch = {
-            viewModel.loading = true
-            coroutine.launch{
+            corountine.launch{
                 val result = PokemonApi.getCard(query)
-                if (result != null)
+                if (result != null) {
                     viewModel.cards = result.data
-                else
-                    viewModel.cards = emptyList()
-                viewModel.loading = false
+                }
             }
             focusManager.clearFocus()
         }),
@@ -242,21 +216,23 @@ fun LoginScreen(destinationsNavigator: DestinationsNavigator) {
         if (PokemonCardsApp.isLoginSuccessful){
             // display UI is login success
         }else{
-            LoginSection(Modifier.padding(horizontal = 16.dp), destinationsNavigator) { isSuccess ->
+            LoginSection(Modifier.padding(horizontal = 16.dp), destinationsNavigator)
+/*            { isSuccess ->
                 if (isSuccess){
                     PokemonCardsApp.isLoginSuccessful = true
                 }else
                 {
                     Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
                 }
-            }
+            }*/
         }
     }
 }
 
 @Composable
 fun LoginSection(
-    modifier: Modifier = Modifier, destinationsNavigator: DestinationsNavigator, onLoginClick:(Boolean) -> Unit
+    modifier: Modifier = Modifier, destinationsNavigator: DestinationsNavigator
+    //, onLoginClick:(Boolean) -> Unit
 ) {
     var userid by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
