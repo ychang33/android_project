@@ -11,7 +11,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class PokemonViewModel: ViewModel(){
-    var cards by mutableStateOf<List<Data>>(emptyList())
+    var cards by mutableStateOf<List<Data>?>(emptyList())
+    var loading by mutableStateOf(false)
 
     fun Favourites(){
 
