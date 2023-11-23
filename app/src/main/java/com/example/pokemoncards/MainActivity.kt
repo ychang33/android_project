@@ -242,21 +242,23 @@ fun LoginScreen(destinationsNavigator: DestinationsNavigator) {
         if (PokemonCardsApp.isLoginSuccessful){
             // display UI is login success
         }else{
-            LoginSection(Modifier.padding(horizontal = 16.dp), destinationsNavigator) { isSuccess ->
+            LoginSection(Modifier.padding(horizontal = 16.dp), destinationsNavigator)
+/*            { isSuccess ->
                 if (isSuccess){
                     PokemonCardsApp.isLoginSuccessful = true
                 }else
                 {
                     Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
                 }
-            }
+            }*/
         }
     }
 }
 
 @Composable
 fun LoginSection(
-    modifier: Modifier = Modifier, destinationsNavigator: DestinationsNavigator, onLoginClick:(Boolean) -> Unit
+    modifier: Modifier = Modifier, destinationsNavigator: DestinationsNavigator
+    //, onLoginClick:(Boolean) -> Unit
 ) {
     var userid by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
