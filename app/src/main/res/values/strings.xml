@@ -3,8 +3,10 @@
     <string name="title_activity_home_ui">HomeUI</string>
     <string name="placeholder_user_id">User ID</string>
     <string name="placeholder_password">Password</string>
+    <string name="placeholder_verify_password">Verify Password</string>
     <string name="bottom_navigation_home">Home</string>
     <string name="bottom_navigation_text_search">Text Search</string>
     <string name="bottom_navigation_image_search">Image Search</string>
     <string name="placeholder_search">search</string>
+    <string name="title_activity_sign_up_screen">SignUpScreen</string>
 </resources>
