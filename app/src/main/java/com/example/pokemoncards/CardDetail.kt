@@ -7,24 +7,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -70,7 +66,7 @@ fun CardDetail(
                     .fillMaxHeight()
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Top
             ) {
                 Box(
                     modifier = Modifier
@@ -86,48 +82,61 @@ fun CardDetail(
                             .clip(MaterialTheme.shapes.medium)
                     )
                 }
-
-                // Rest of your content
-                Column(
+                ElevatedCard(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 6.dp
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(12.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column {
-                            Text(text = "ID: ${card.id}")
-                            Text(text = "Name: ${card.name}")
-                            card.rarity?.let { Text(text = "Rarity: $it") }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 10.dp, top = 5.dp, bottom = 5.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(text = "ID: ${card.id}")
+                                Text(text = "Name: ${card.name}")
+                                card.rarity?.let { Text(text = "Rarity: $it") }
+                            }
+                            FavoriteIcon(card)
                         }
-                        FavoriteIcon(card)
-                    }
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 10.dp, top = 5.dp, bottom = 5.dp)
+                        )
+                        {
+                            Text(text = "Set: ${card.set.name}")
+                            Text(text = "Series: ${card.set.series}")
 
-                    Text(text = "Set: ${card.set.name}")
-                    Text(text = "Series: ${card.set.series}")
+                            card.tcgplayer?.let {
+                                Spacer(modifier = Modifier.padding(5.dp))
+                                Text(text = "Prices (USD)")
+                                Text(text = "Updated At: ${it.updatedAt}")
+                                Spacer(modifier = Modifier.padding(4.dp))
 
-                    card.tcgplayer?.let {
-                        Spacer(modifier = Modifier.padding(8.dp))
-                        Text(text = "Prices")
-                        Text(text = "Updated At: ${it.updatedAt}")
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        
-                        card.tcgplayer.prices?.let {
-                            val priceMap = card.tcgplayer.prices.toMap()
-                            for ((name, value) in priceMap) {
-                                value?.let {
-                                    Text(text = name)
-                                    val detail = value?.toMap()
-                                    if (detail != null) {
-                                        for ((name, value) in detail) {
-                                            value?.let {
-                                                Text(text = "${name}: $$value")
+                                card.tcgplayer.prices?.let {
+                                    val priceMap = card.tcgplayer.prices.toMap()
+                                    for ((name, value) in priceMap) {
+                                        value?.let {
+                                            Text(text = name)
+                                            val detail = value.toMap()
+                                            if (detail != null) {
+                                                for ((name, value) in detail) {
+                                                    value?.let {
+                                                        Text(text = "${name}: $$value")
+                                                    }
+                                                }
                                             }
+                                            Spacer(modifier = Modifier.padding(4.dp))
                                         }
                                     }
-                                    Spacer(modifier = Modifier.padding(4.dp))
                                 }
                             }
                         }
@@ -136,7 +145,6 @@ fun CardDetail(
             }
         }
     }
-}
 
 
 @Composable
