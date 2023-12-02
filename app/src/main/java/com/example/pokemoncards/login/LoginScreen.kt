@@ -117,29 +117,35 @@ fun LoginSection(
         Spacer(Modifier.height(16.dp))
         Button(
             onClick = {
-                val db = Firebase.firestore
-                val userRef = db.collection("users").document(userid)
+                if ((!userid.isNullOrEmpty()) and (!password.isNullOrEmpty())) {
+                    val db = Firebase.firestore
+                    val userRef = db.collection("users").document(userid)
 
-                userRef.get()
-                    .addOnSuccessListener { document ->
-                        if (document != null) {
-                            val userPassword = document.data?.get("password")
-                            PokemonCardsApp.isLoginSuccessful = (userPassword == password)
-                            if (PokemonCardsApp.isLoginSuccessful) {
-                                PokemonCardsApp.currentUserId = userid
-                                Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show()
-                                destinationsNavigator.navigate(SearchScreenDestination)
-                            }else
-                            {
-                                Toast.makeText(context, "Login fail", Toast.LENGTH_SHORT).show()
+                    userRef.get()
+                        .addOnSuccessListener { document ->
+                            if (document != null) {
+                                val userPassword = document.data?.get("password")
+                                PokemonCardsApp.isLoginSuccessful = (userPassword == password)
+                                if (PokemonCardsApp.isLoginSuccessful) {
+                                    PokemonCardsApp.currentUserId = userid
+                                    Toast.makeText(context, "Login success", Toast.LENGTH_SHORT)
+                                        .show()
+                                    destinationsNavigator.navigate(SearchScreenDestination)
+                                } else {
+                                    Toast.makeText(context, "Login fail", Toast.LENGTH_SHORT).show()
+                                }
+                            } else {
+                                Toast.makeText(context, "User not found", Toast.LENGTH_SHORT).show()
                             }
-                        } else {
-                            Toast.makeText(context, "User not found", Toast.LENGTH_SHORT).show()
                         }
-                    }
-                    .addOnFailureListener { _ ->
-                        Toast.makeText(context, "Fail to locate the document", Toast.LENGTH_SHORT).show()
-                    }
+                        .addOnFailureListener { _ ->
+                            Toast.makeText(
+                                context,
+                                "Fail to locate the document",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                }
             } ){
             // Button text
             Text("Login")
