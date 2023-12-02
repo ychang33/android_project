@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Login
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
@@ -237,16 +238,24 @@ fun Bottom_bar(destinationsNavigator: DestinationsNavigator){
     BottomAppBar {
         if(!PokemonCardsApp.isLoginSuccessful)
             IconButton(onClick = { destinationsNavigator.navigate(LoginScreenDestination) }) {
-                    Icon(imageVector = Icons.Default.Login, contentDescription = "Login")
+                    Icon(imageVector = Icons.Default.Login, contentDescription = stringResource(id = R.string.desc_login))
             }
         else
         {
+
             IconButton(onClick = {destinationsNavigator.navigate(LoginScreenDestination)}) {
-                Icon(Icons.Filled.Search, contentDescription = "Search")
+                Icon(Icons.Filled.Search, contentDescription = stringResource(id = R.string.desc_search))
             }
             IconButton(onClick = { viewModel.Favourites() })
             {
-                Icon(Icons.Filled.Favorite, contentDescription = "Favorites")
+                Icon(Icons.Filled.Favorite, contentDescription = stringResource(id = R.string.desc_favorities))
+            }
+            IconButton(onClick = {
+                PokemonCardsApp.isLoginSuccessful = false
+                destinationsNavigator.navigate(SearchScreenDestination)
+            })
+            {
+                Icon(Icons.Default.Logout, contentDescription = stringResource(id = R.string.desc_logout))
             }
         }
     }
