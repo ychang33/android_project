@@ -19,12 +19,14 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -52,6 +54,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pokemoncards.destinations.CardDetailDestination
 import com.example.pokemoncards.destinations.LoginScreenDestination
+import com.example.pokemoncards.destinations.SearchScreenDestination
 import com.example.pokemoncards.ui.theme.PokemonCardsTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
@@ -86,7 +89,8 @@ class MainActivity : ComponentActivity() {
 fun HomeScreen(
     navigator: DestinationsNavigator
 ){
-    navigator.navigate(LoginScreenDestination)
+    //navigator.navigate(LoginScreenDestination)
+    navigator.navigate(SearchScreenDestination)
 }
 
 
@@ -95,14 +99,10 @@ fun HomeScreen(
 fun SearchScreen(
     destinationsNavigator: DestinationsNavigator
 ){
-    val viewModel = viewModel{ PokemonViewModel() }
 
     Scaffold (
         topBar = {SearchBar()},
-        floatingActionButton = { FloatingActionButton(onClick = { viewModel.Favourites() })
-        {
-            Icon(Icons.Filled.Favorite, contentDescription = "Favorites")}
-        }
+        bottomBar = { Bottom_bar(destinationsNavigator = destinationsNavigator)}
     ){ innerPadding ->
         Box(modifier = Modifier
             .padding(innerPadding)
@@ -175,11 +175,8 @@ fun CardList(destinationsNavigator: DestinationsNavigator){
                                 textAlign = TextAlign.Center,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis)
-                            FavoriteIcon(
-                                card,
-                                modifier = Modifier
-                                    .padding(3.dp)
-                            )
+                            if(PokemonCardsApp.isLoginSuccessful)
+                                FavoriteIcon(card, modifier = Modifier.padding(3.dp))
                         }
                     }
                 }
@@ -231,4 +228,26 @@ fun SearchBar(
             .fillMaxWidth()
             .heightIn(min = 56.dp)
     )
+}
+
+@Composable
+fun Bottom_bar(destinationsNavigator: DestinationsNavigator){
+    val viewModel = viewModel{ PokemonViewModel() }
+
+    BottomAppBar {
+        if(!PokemonCardsApp.isLoginSuccessful)
+            IconButton(onClick = { destinationsNavigator.navigate(LoginScreenDestination) }) {
+                    Icon(imageVector = Icons.Default.Login, contentDescription = "Login")
+            }
+        else
+        {
+            IconButton(onClick = {destinationsNavigator.navigate(LoginScreenDestination)}) {
+                Icon(Icons.Filled.Search, contentDescription = "Search")
+            }
+            IconButton(onClick = { viewModel.Favourites() })
+            {
+                Icon(Icons.Filled.Favorite, contentDescription = "Favorites")
+            }
+        }
+    }
 }

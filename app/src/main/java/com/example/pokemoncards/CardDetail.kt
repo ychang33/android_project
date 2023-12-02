@@ -47,6 +47,7 @@ fun CardDetail(
     card: Data,
     destinationsNavigator: DestinationsNavigator
 ) {
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -104,7 +105,8 @@ fun CardDetail(
                                 Text(text = "Name: ${card.name}")
                                 card.rarity?.let { Text(text = "Rarity: $it") }
                             }
-                            FavoriteIcon(card)
+                            if(PokemonCardsApp.isLoginSuccessful)
+                                FavoriteIcon(card)
                         }
                         Column(
                             modifier = Modifier
