@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+//
 
 class PokemonViewModel: ViewModel(){
     //var cards by mutableStateOf<List<Data>?>(emptyList())
