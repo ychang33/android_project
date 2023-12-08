@@ -176,11 +176,11 @@ fun FavoriteIcon(card: Data, modifier: Modifier = Modifier) {
         ) {
             IconButton(
                 onClick = {
-
+                    table = db.collection("favorites").document(card.id + PokemonCardsApp.currentUserId)
                     // Remove the record from database
                     if (isFavorite) {
 
-                        db.collection("favorites").document(card.id + PokemonCardsApp.currentUserId).delete()
+                        table.delete()
                             .addOnSuccessListener {
                                 Toast.makeText(context, "Remove success", Toast.LENGTH_SHORT).show()
                             }
@@ -189,7 +189,7 @@ fun FavoriteIcon(card: Data, modifier: Modifier = Modifier) {
                             }
                     }else{
                         // Add a record to database
-                        db.collection("favorites").document(card.id + PokemonCardsApp.currentUserId).set(card)
+                       table.set(card)
                             .addOnSuccessListener {
                                 Toast.makeText(context, "Insert success", Toast.LENGTH_SHORT).show()
                             }
